@@ -22,9 +22,8 @@ namespace iBlog.Areas.Identity.Pages.Account
             _context = context;
         }
 
-        //Pass the userId of the user who you want to assign role to
         //await createRoles("2a5dede2-cb4c-4da3-b1d2-d8aa52028528","Admin");
-
+        //Создает роль и привязывает к ней пользователя
         public async Task CreateRoles(string userId, string roleName)
         {
             bool x = await _roleManager.RoleExistsAsync(roleName);
