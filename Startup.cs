@@ -35,7 +35,7 @@ namespace iBlog
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI();
             services.AddMvc();
-            services.AddRazorPages();
+            services.AddRazorPages();          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,5 +67,6 @@ namespace iBlog
                 endpoints.MapRazorPages();
             });
         }
+
     }
 }

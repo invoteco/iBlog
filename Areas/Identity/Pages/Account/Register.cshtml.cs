@@ -9,11 +9,14 @@ using Invoteco.Smtp;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+
+using iBlog.Data;
 
 namespace iBlog.Areas.Identity.Pages.Account
 {
@@ -24,19 +27,24 @@ namespace iBlog.Areas.Identity.Pages.Account
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly Data.ApplicationDbContext _context;//Для реализации метода CreateRoles
+        private readonly RoleManager<IdentityRole> _roleManager;//Для реализации метода CreateRoles
 
         public RegisterModel(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager,//,
+            ApplicationDbContext conText)   
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
+            _context = conText;
         }
-
         [BindProperty]
         public InputModel Input { get; set; }
 
@@ -80,7 +88,6 @@ namespace iBlog.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
@@ -88,12 +95,16 @@ namespace iBlog.Areas.Identity.Pages.Account
                         pageHandler: null,
                         values: new { area = "Identity", userId = user.Id, code = code },
                         protocol: Request.Scheme);
-
+#if DEBUG
+                    #region Симуляция smtp-провайдера
+                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    #endregion Симуляция smtp-провайдера
+#else
                     #region Реализация собственного smtp-провайдера
                     SmtpProvider smtpp = new SmtpProvider();
                     smtpp.IsBodyHtml = true;
                     smtpp.IsSSL = true;
-
                     smtpp.MessageBody = "<p>Вы получили это письмо потому что кто-то зарегистрировался на сайте invoteco.com и при регистрации указал этот адрес электронной почты.</p>" +
                         "<p>Если это были Вы, то подтвердите свой e-mail, нажав на ссылку 'Подтвердить'. В противном случае не предпринимайте никаких действий.</p>" +
                         "<p>После подтверждения e-mail Вы будете перенаправлены на сайт и после входа сможете воспользоваться всей его функциональностью.</p>" + "<a href=" + callbackUrl + ">ПОДТВЕРДИТЬ</a>";
@@ -103,7 +114,6 @@ namespace iBlog.Areas.Identity.Pages.Account
                     smtpp.SmtpDomain = "smtp.hosterdomain.tld";
                     smtpp.SmtpPort = 2525;
                     smtpp.UserEmail = user.Email;
-
                     if (smtpp.IsValidPatch())//Если путь к корневой директории соответствует установленному хостинг-провайдером,
                     {
                         //то отправляем пользователю письмо со ссылкой для подтверждения e-mail.
@@ -119,9 +129,17 @@ namespace iBlog.Areas.Identity.Pages.Account
                         await smtpp.AsyncSendMailWithEncodeUrlPassworFree(smtpp.SenderName, smtpp.SenderEmail, AdminEmail, WarningSubject, WarningMessage, smtpp.IsBodyHtml, smtpp.SmtpDomain, smtpp.SmtpPort, smtpp.IsSSL);
                     }
                     #endregion Реализация собственного smtp-провайдера
-
+#endif //DEBUG
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
+                        #region Присвоение первому пользователю admin@domain.tld роли "Admin"
+                        //Метод CreateRolesAndAssignToUser в данном случае вызывается для того, чтобы создать перврго пользователя с ролью Admin.
+                        //Этот прользователь создается при регистрации с учетными данными (email), указанными в аргументах метода. До его создания (и после) 
+                        //в приложении может регистрироваться сколько угодно пользователей.
+                        //В дальнейшем планируется разработать использование этого метода с извлечением роли и e-mail администратора из хранилища.
+                        await CreateRolesAndAssignToUser(user, _context, _roleManager,_userManager, "Admin", "admin@domain.tld");
+                        #endregion Присвоение первому пользователю admin@domain.tld роли "Admin"
+                                               
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email });
                     }
                     else
@@ -135,9 +153,48 @@ namespace iBlog.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        /// <summary>
+        /// Создает роль с именем rolename и присваивает ее пользователю appuser, использовавшему при регистрации Email email 
+        /// Пример реализации: await CreateRolesAndAssignToUser(user, _context, _roleManager,_userManager, "Admin", "admin@domain.tld");
+        /// </summary>
+        /// <param name="appuser">Пользователь AppUser : IdentityUser</param>
+        /// <param name="dbcontext">Контекст данных приложения</param>
+        /// <param name="rolemanager">Менеджер ролей</param>
+        /// <param name="usermanager">Менеджер пользователей</param>
+        /// <param name="rolename">Имя роли, которая будет присвоена пользователю appuser</param>
+        /// <param name="email">E-mail, использованный пользователем appuser при регистрации</param>
+        /// <returns></returns>
+        public async Task CreateRolesAndAssignToUser(AppUser appuser, ApplicationDbContext dbcontext, RoleManager<IdentityRole> rolemanager, UserManager<AppUser> usermanager, string rolename, string email)
+        {
+            bool x = await rolemanager.RoleExistsAsync(rolename);
+            if (!x)//Create new role if not existing
+            {
+                var role = new IdentityRole();
+                role.Name = rolename;
+                await rolemanager.CreateAsync(role);
+            }
+            var userId = appuser.Id;
+            //Get all roles of the user by userId
+            var allRoles = (from userRole in dbcontext.UserRoles.Where(ur => ur.UserId == userId).ToList()
+                            join r in dbcontext.Roles
+                            on userRole.RoleId equals r.Id
+                            select r.Name).ToList();
+            //assign role only if he does not have this roleName before            
+            if (!allRoles.Contains(rolename))
+            {
+                var user = await usermanager.FindByIdAsync(userId);
+                //var y=await _userManager.
+                string em = user.Email;
+                if (em == email)
+                {
+                    await usermanager.AddToRoleAsync(user, rolename);
+                }
+                //For removing a role, use await _userManager.RemoveFromRoleAsync(user, "Admin");
+            }
         }
     }
 }
