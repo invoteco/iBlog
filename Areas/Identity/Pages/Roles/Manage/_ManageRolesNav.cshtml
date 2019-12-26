@@ -1,0 +1,6 @@
+﻿@*@inject SignInManager<iBlog.AppUser> SignInManager*@
+
+<ul class="nav nav-pills flex-column">
+    <li class="nav-item"><a class="nav-link @ManageRolesNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Profile</a></li>
+    <li class="nav-item"><a class="nav-link @ManageRolesNavPages.AppRolesNavClass(ViewContext)" id="email" asp-page="./AppRoles">Email</a></li>
+</ul>
