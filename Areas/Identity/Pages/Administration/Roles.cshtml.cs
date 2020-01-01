@@ -50,8 +50,14 @@ namespace iBlog.Areas.Identity.Pages.Administration
             return allRoles;
         }
 
-        public async Task CreateAppRole(string rolename)
+        public void OnGet()
         {
+            Roles = GetAllAppRoles(_context);
+        }
+
+        public async Task<IActionResult> OnPostCreateAsync(string rolename)
+        {
+
             bool x = await _roleManager.RoleExistsAsync(rolename);
             if (!x)
             {
@@ -59,16 +65,13 @@ namespace iBlog.Areas.Identity.Pages.Administration
                 role.Name = rolename;
                 await _roleManager.CreateAsync(role);
             }
+            return RedirectToPage("./Roles");
         }
 
-        public void OnGet()
+        public async Task<IActionResult> OnPostDeleteAsync(string rolename)
         {
-            Roles = GetAllAppRoles(_context);
-        }
-
-        public async Task<IActionResult> OnPostAsync(string newrolename)
-        {           
-            await CreateAppRole(newrolename);
+            IdentityRole role = await _roleManager.FindByNameAsync(rolename);
+            await _roleManager.DeleteAsync(role);
             return RedirectToPage("./Roles");
         }
     }

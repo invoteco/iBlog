@@ -7,28 +7,32 @@
 }
 
 <table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <td>All Roles in Application</td>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var role in Model.Roles)
-        {
+        <thead>
             <tr>
-                <td>@role</td>
+                <td>All Roles in Application</td>
             </tr>
-        }
-    </tbody>
-</table>
-
+        </thead>
+        <tbody>
+            @foreach (var role in Model.Roles)
+            {
+                <tr>
+                    <td>@role</td>
+                    <td>
+                       <form method="post" asp-page-handler="Delete" asp-route-rolename="@role">
+                            <button type="submit" class="btn btn-warning">Delete</button>
+                       </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 <div class="col-md-4">
-    <form  method="post">
+    <form method="post" asp-page-handler="Create">
         <h4>Create a new Role.</h4>
         <hr />
         <div class="form-group">
             <label>New Role Name </label>
-            <input type="text" name="newrolename" class="form-control" />
+            <input type="text" name="rolename" class="form-control" />
         </div>
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
