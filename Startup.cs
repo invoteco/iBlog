@@ -30,17 +30,12 @@ namespace iBlog
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            //services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            //    .AddRoles<IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>()
-            //    .AddDefaultUI();
-            services.AddIdentity<AppUser, IdentityRole>()
+
+            services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()
-                    .AddDefaultUI();
-            //services.AddIdentity << IdentityUser,IdentityRole > ()
-            //      .AddDefaultUI(UIFramework.Bootstrap4)
-            //      .AddEntityFrameworkStores();
+                    .AddDefaultUI()
+                    .AddDefaultTokenProviders();
             services.AddMvc();
             services.AddRazorPages();
         }
