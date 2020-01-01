@@ -27,7 +27,7 @@ namespace iBlog.Areas.Identity.Pages.Account
         private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly Data.ApplicationDbContext _context;//Для реализации метода CreateRoles
+        private readonly ApplicationDbContext _context;//Для реализации метода CreateRoles
         private readonly RoleManager<IdentityRole> _roleManager;//Для реализации метода CreateRoles
 
         public RegisterModel(
