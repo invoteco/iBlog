@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "/Areas/Identity/Pages/Administration/_Layout.cshtml";
+}
+
+<h1>Administration page</h1>
+
+<div>
+    <h4>Change application settings</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_AdminNav" />
+        </div>
+        <div class="col-md-9">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

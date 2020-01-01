@@ -1,0 +1,15 @@
+﻿@page
+@using iBlog.Areas.Identity.Pages.Administration
+@model IndexModel
+@{
+    ViewData["Title"] = "Administr";
+    ViewData["ActivePage"] = AdminNavPages.Index;
+}
+<ul class="nav nav-pills flex-column">
+    <li class="nav-item"><a class="nav-link @AdminNavPages.IndexNavClass(ViewContext)" id="adminp" asp-page="./Index">Administration</a></li>
+    <li class="nav-item"><a class="nav-link @AdminNavPages.RolesNavClass(ViewContext)" id="rolesp" asp-page="./Roles">Roles</a></li>
+</ul>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
