@@ -11,9 +11,12 @@ namespace iBlog.Areas.Identity.Pages.Administration
         public static string Index => "Index";
 
         public static string Roles => "Roles";
+
+        public static string UsersInRoles => "UsersInRoles";
         public static string IndexNavClass(ViewContext viewContext) => AdminPageNavClass(viewContext, Index);
 
         public static string RolesNavClass(ViewContext viewContext) => AdminPageNavClass(viewContext, Roles);
+        public static string UsersInRolesNavClass(ViewContext viewContext) => AdminPageNavClass(viewContext, UsersInRoles);
 
         private static string AdminPageNavClass(ViewContext viewContext, string page)
         {

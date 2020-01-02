@@ -45,7 +45,7 @@ namespace iBlog.Areas.Identity.Pages.Administration
         /// <returns></returns>
         public List<string> GetAllAppRoles(ApplicationDbContext dbcontext)
         {
-            var allRoles = (from Role in _context.Roles.ToList()
+            var allRoles = (from Role in dbcontext.Roles.ToList()
                             select Role.Name).ToList();
             return allRoles;
         }

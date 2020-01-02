@@ -10,6 +10,8 @@
         <thead>
             <tr>
                 <td>All Roles in Application</td>
+                <td>Description</td>
+                <td>Action</td>
             </tr>
         </thead>
         <tbody>
@@ -17,6 +19,7 @@
             {
                 <tr>
                     <td>@role</td>
+                    <td>Description of Role</td>
                     <td>
                        <form method="post" asp-page-handler="Delete" asp-route-rolename="@role">
                             <button type="submit" class="btn btn-warning">Delete</button>
@@ -26,10 +29,11 @@
             }
         </tbody>
     </table>
+<hr/>
+
 <div class="col-md-4">
     <form method="post" asp-page-handler="Create">
         <h4>Create a new Role.</h4>
-        <hr />
         <div class="form-group">
             <label>New Role Name </label>
             <input type="text" name="rolename" class="form-control" />
@@ -37,3 +41,4 @@
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 </div>
+<hr />
