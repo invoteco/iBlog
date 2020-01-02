@@ -31,6 +31,27 @@ namespace iBlog.Areas.Identity.Pages.Administration
             UsersRolesList = _roleManager.Roles.ToList();
             UsersList = _userManager.Users.ToList();
         }
+        //==================================================================================================================================================
+        public async Task AssignRoleToUser(AppUser appuser, ApplicationDbContext dbcontext, UserManager<AppUser> usermanager, string rolename, string email)
+        {
+            var userId = appuser.Id;
+            //Get all roles of the user by userId
+            var allRoles = (from userRole in dbcontext.UserRoles.Where(ur => ur.UserId == userId).ToList()
+                            join r in dbcontext.Roles
+                            on userRole.RoleId equals r.Id
+                            select r.Name).ToList();
+            //assign role only if he does not have this roleName before            
+            if (!allRoles.Contains(rolename))
+            {
+                var user = await usermanager.FindByIdAsync(userId);
+                string em = user.Email;
+                if (em == email)
+                {
+                    await usermanager.AddToRoleAsync(user, rolename);
+                }
+                //For removing a role, use await _userManager.RemoveFromRoleAsync(user, rolename);
+            }
+        }
     }
 }
 

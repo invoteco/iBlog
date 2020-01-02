@@ -8,39 +8,44 @@
     ViewData["ActivePage"] = AdminNavPages.UsersInRoles;
 }
 <h4>Users role management</h4>
-<table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <td>All Users</td>
-            @foreach (var approle in Model.UsersRolesList)
-            {
-                <td>Is "@approle.Name"</td>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var appuser in Model.UsersList)
-        {
+<form method="post" asp-page-handler="Edit">
+    <table class="table table-striped table-bordered">
+        <thead>
             <tr>
-                <td>
-                    @appuser.Email
-                </td>
+                <td>All Users</td>
+                @foreach (var approle in Model.UsersRolesList)
+                {
+                    <td>Is "@approle.Name"</td>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appuser in Model.UsersList)
+            {
+                <tr>
+                    <td>
+                        @appuser.Email
+                    </td>
                     @foreach (var approle in Model.UsersRolesList)
                     {
-                       <td>
-                           @{var tuser = await UserManager.FindByEmailAsync(appuser.Email);}
-                           @{var tuserRoles = await UserManager.GetRolesAsync(tuser);}
-                           @if (tuserRoles.Contains(approle.Name))
+                        <td>
+
+                            @{var tuser = await UserManager.FindByEmailAsync(appuser.Email);}
+                            @{var tuserRoles = await UserManager.GetRolesAsync(tuser);}
+                            @if (tuserRoles.Contains(approle.Name))
                             {
-                                <p>Y</p>
+                                <input type="checkbox" checked />
                             }
-                            else 
-                            { 
-                                <p>N</p>
+                            else
+                            {
+                                <input type="checkbox" />
                             }
-                       </td>
-                     }
-            </tr>
-        }
-    </tbody>
-</table>
+
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
