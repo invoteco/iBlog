@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using iBlog.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -26,17 +27,7 @@ namespace iBlog.Areas.Identity.Pages.Administration
             _context = conText;
         }
 
-        [BindProperty]
-        public InputModel Input { get; set; }
-        public string ReturnUrl { get; set; }
         public List<string> Roles { get; set; }
-        public string RoleName { get; set; }
-        public class InputModel
-        {
-            [Required]
-            public string RoleName { get; set; }
-        }
-
 
         /// <summary>
         /// Получает все роли приложения

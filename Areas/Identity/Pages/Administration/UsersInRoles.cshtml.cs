@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
 using iBlog.Data;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace iBlog.Areas.Identity.Pages.Administration
 {
@@ -22,7 +26,7 @@ namespace iBlog.Areas.Identity.Pages.Administration
             _roleManager = roleManager;
             _context = conText;
         }
-
+        [BindProperty]
         public List<IdentityRole> UsersRolesList { get; set; }
         public List<AppUser> UsersList { get; set; }
 
@@ -31,7 +35,22 @@ namespace iBlog.Areas.Identity.Pages.Administration
             UsersRolesList = _roleManager.Roles.ToList();
             UsersList = _userManager.Users.ToList();
         }
-        //==================================================================================================================================================
+
+        public async Task<IActionResult> OnPostUpdateAsync(List<string> userroles)
+        {
+            string delimiter = "&";
+            foreach (var userdata in userroles)
+            {
+                string[] parts = userdata.Split(delimiter);
+                string useruid = parts[0];
+                string userrole = parts[1];
+
+                AppUser tappuser = await _userManager.FindByIdAsync(useruid);
+                await AssignRoleToUser(tappuser, _context, _userManager, userrole, tappuser.Email);
+            }
+            return RedirectToPage("./UsersInRoles");
+        }
+
         public async Task AssignRoleToUser(AppUser appuser, ApplicationDbContext dbcontext, UserManager<AppUser> usermanager, string rolename, string email)
         {
             var userId = appuser.Id;
