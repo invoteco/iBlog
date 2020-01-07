@@ -14,42 +14,49 @@
         <thead>
             <tr>
                 <td>All Users</td>
-                @foreach (var approle in Model.UsersRolesList)
+                @foreach (var approle in Model.AllRolesList)
                 {
                     <td>Is "@approle.Name"</td>
                 }
             </tr>
         </thead>
         <tbody>
-            @foreach (var appuser in Model.UsersList)
+            @foreach (var appuser in Model.AllUsersList)
             {
                 <tr>
                     <td>
                         @appuser.Email
                     </td>
-                    @foreach (var approle in Model.UsersRolesList)
-                    {
-                <td>
+                          @foreach (var approle in Model.AllRolesList)
+                           {
+                    <td>
+                              @{var tuser = await UserManager.FindByEmailAsync(appuser.Email);}
+                              @{var tuserRoles = await UserManager.GetRolesAsync(tuser);}
 
-                    @{var tuser = await UserManager.FindByEmailAsync(appuser.Email);}
-                    @{var tuserRoles = await UserManager.GetRolesAsync(tuser);}
-                    @if (tuserRoles.Contains(approle.Name))
-                    {
-                        if (approle.Name == "Admin")
-                        {
-                            <input type="checkbox" checked="checked" disabled="disabled" name="userroles" value="@appuser.Id&@approle.Name" />
-                        }
-                        else
-                        {
-                            <input type="checkbox" checked="checked" name="userroles" value="@appuser.Id&@approle.Name" />
-                        }
-                    }
-                    else
-                    {
-                        <input type="checkbox" name="userroles" value="@appuser.Id&@approle.Name" />
-                    }
-                </td>
-                    }
+                               @if (tuserRoles.Contains(approle.Name))
+                               {
+                                   if (approle.Name == "Admin")
+                                   {
+                                        <input type="checkbox" checked="checked" disabled="disabled" name="userroles" />
+                                   }
+                                   else
+                                   {
+                                        <input type="checkbox" checked="checked" name="userroles" value="@appuser.Id&@approle.Name" />
+                                   }
+                               }
+                              else
+                              {
+                                   if (approle.Name == "Admin")
+                                   {
+                                         <input type="checkbox" name="userroles" disabled="disabled" value="@appuser.Id&@approle.Name" />
+                                   }
+                                   else 
+                                   { 
+                                    <input type="checkbox" name="userroles" value="@appuser.Id&@approle.Name" />
+                                   }
+                              }
+                    </td>
+                           }
                 </tr>
             }
         </tbody>

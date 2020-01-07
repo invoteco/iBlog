@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,11 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Identity;
 using iBlog.Data;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace iBlog.Areas.Identity.Pages.Administration
 {
@@ -18,59 +12,58 @@ namespace iBlog.Areas.Identity.Pages.Administration
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ApplicationDbContext _context;
 
-        public UsersInRolesModel(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext conText)
+        public UsersInRolesModel(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _context = conText;
         }
         [BindProperty]
-        public List<IdentityRole> UsersRolesList { get; set; }
-        public List<AppUser> UsersList { get; set; }
+        public List<IdentityRole> AllRolesList { get; set; }
+        public List<AppUser> AllUsersList { get; set; }
 
         public void OnGet()
         {
-            UsersRolesList = _roleManager.Roles.ToList();
-            UsersList = _userManager.Users.ToList();
+            AllRolesList = _roleManager.Roles.ToList();
+            AllUsersList = _userManager.Users.ToList();
         }
 
         public async Task<IActionResult> OnPostUpdateAsync(List<string> userroles)
         {
-            string delimiter = "&";
+            //Сначала удаляем ВСЕ роли (кроме "Admin") ВСЕХ пользователей.
+            AllRolesList = _roleManager.Roles.ToList();
+            AllUsersList = _userManager.Users.ToList();
+
+            foreach (var role in AllRolesList)
+            {
+                string rolename = role.Name;
+                if (rolename != "Admin")
+                {
+                    foreach (var user in AllUsersList)
+                    {
+                        string userid = user.Id;
+                        AppUser tempuser = await _userManager.FindByIdAsync(userid);
+                        await _userManager.RemoveFromRoleAsync(tempuser, rolename);
+                    }
+                }
+            }
+
+            //Затем присваиваем новые роли в соответствии с выбором.
+            string delimiter = "&";//Символ разделителя, разделяющий Id пользователя и назначенную ему роль в запросе 
+            //(например, 546b7c31-cdca-4c51-a5d9-a84460a2df7e&Moderator). 
+            //Этот же символ должен быть включен в запрос (см.value="@appuser.Id&@approle.Name" в UsersInRoles.cshtml) 
             foreach (var userdata in userroles)
             {
                 string[] parts = userdata.Split(delimiter);
                 string useruid = parts[0];
                 string userrole = parts[1];
-
-                AppUser tappuser = await _userManager.FindByIdAsync(useruid);
-                await AssignRoleToUser(tappuser, _context, _userManager, userrole, tappuser.Email);
+                AppUser tempappuser = await _userManager.FindByIdAsync(useruid);
+                await _userManager.AddToRoleAsync(tempappuser, userrole);
             }
             return RedirectToPage("./UsersInRoles");
         }
 
-        public async Task AssignRoleToUser(AppUser appuser, ApplicationDbContext dbcontext, UserManager<AppUser> usermanager, string rolename, string email)
-        {
-            var userId = appuser.Id;
-            //Get all roles of the user by userId
-            var allRoles = (from userRole in dbcontext.UserRoles.Where(ur => ur.UserId == userId).ToList()
-                            join r in dbcontext.Roles
-                            on userRole.RoleId equals r.Id
-                            select r.Name).ToList();
-            //assign role only if he does not have this roleName before            
-            if (!allRoles.Contains(rolename))
-            {
-                var user = await usermanager.FindByIdAsync(userId);
-                string em = user.Email;
-                if (em == email)
-                {
-                    await usermanager.AddToRoleAsync(user, rolename);
-                }
-                //For removing a role, use await _userManager.RemoveFromRoleAsync(user, rolename);
-            }
-        }
+        
     }
 }
 
