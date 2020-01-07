@@ -32,21 +32,6 @@ namespace iBlog.Areas.Identity.Pages.Account
         private readonly RoleManager<IdentityRole> _roleManager;//Для реализации метода CreateRoles
         private readonly IConfiguration _config;
 
-        //public RegisterModel(
-        //    UserManager<AppUser> userManager,
-        //    SignInManager<AppUser> signInManager,
-        //    ILogger<RegisterModel> logger,
-        //    IEmailSender emailSender,
-        //    RoleManager<IdentityRole> roleManager,//,
-        //    ApplicationDbContext conText)   
-        //{
-        //    _userManager = userManager;
-        //    _signInManager = signInManager;
-        //    _logger = logger;
-        //    _emailSender = emailSender;
-        //    _roleManager = roleManager;
-        //    _context = conText;
-        //}
         public RegisterModel(
                UserManager<AppUser> userManager,
                SignInManager<AppUser> signInManager,
