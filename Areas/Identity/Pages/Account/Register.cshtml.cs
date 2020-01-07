@@ -137,7 +137,7 @@ namespace iBlog.Areas.Identity.Pages.Account
                     {
                         #region Присвоение первому пользователю admin@domain.tld роли "Admin"
                         //Метод CreateRolesAndAssignToUser в данном случае вызывается для того, чтобы создать перврго пользователя с ролью Admin.
-                        //Этот прользователь создается при регистрации с учетными данными (email), указанными в аргументах метода. До его создания (и после) 
+                        //Этот пользователь создается при регистрации с учетными данными (email), указанными в аргументах метода. До его создания (и после) 
                         //в приложении может регистрироваться сколько угодно пользователей.
                         //В дальнейшем планируется разработать использование этого метода с извлечением роли и e-mail администратора из хранилища.
                         await CreateRolesAndAssignToUser(user, _context, _roleManager, _userManager, _config.GetValue<string>("SmtpSettings:Adminname"), _config.GetValue<string>("SmtpSettings:Adminemail"));
