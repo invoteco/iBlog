@@ -61,9 +61,7 @@ namespace iBlog.Areas.Identity.Pages.Administration
                 await _userManager.AddToRoleAsync(tempappuser, userrole);
             }
             return RedirectToPage("./UsersInRoles");
-        }
-
-        
+        }      
     }
 }
 

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
 using iBlog.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace iBlog.Areas.Identity.Pages.Account
 {
@@ -29,14 +30,30 @@ namespace iBlog.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;//Для реализации метода CreateRoles
         private readonly RoleManager<IdentityRole> _roleManager;//Для реализации метода CreateRoles
+        private readonly IConfiguration _config;
 
+        //public RegisterModel(
+        //    UserManager<AppUser> userManager,
+        //    SignInManager<AppUser> signInManager,
+        //    ILogger<RegisterModel> logger,
+        //    IEmailSender emailSender,
+        //    RoleManager<IdentityRole> roleManager,//,
+        //    ApplicationDbContext conText)   
+        //{
+        //    _userManager = userManager;
+        //    _signInManager = signInManager;
+        //    _logger = logger;
+        //    _emailSender = emailSender;
+        //    _roleManager = roleManager;
+        //    _context = conText;
+        //}
         public RegisterModel(
-            UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager,
-            ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager,//,
-            ApplicationDbContext conText)   
+               UserManager<AppUser> userManager,
+               SignInManager<AppUser> signInManager,
+               ILogger<RegisterModel> logger,
+               IEmailSender emailSender,
+               RoleManager<IdentityRole> roleManager,//,
+               ApplicationDbContext conText, IConfiguration config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -44,6 +61,7 @@ namespace iBlog.Areas.Identity.Pages.Account
             _emailSender = emailSender;
             _roleManager = roleManager;
             _context = conText;
+            _config = config;
         }
         [BindProperty]
         public InputModel Input { get; set; }
@@ -109,10 +127,10 @@ namespace iBlog.Areas.Identity.Pages.Account
                         "<p>Если это были Вы, то подтвердите свой e-mail, нажав на ссылку 'Подтвердить'. В противном случае не предпринимайте никаких действий.</p>" +
                         "<p>После подтверждения e-mail Вы будете перенаправлены на сайт и после входа сможете воспользоваться всей его функциональностью.</p>" + "<a href=" + callbackUrl + ">ПОДТВЕРДИТЬ</a>";
                     smtpp.MessageSubject = "Подтверждение E-mail";
-                    smtpp.SenderEmail = "confirm@domain.tld";
-                    smtpp.SenderName = "Invoteco";
-                    smtpp.SmtpDomain = "smtp.hosterdomain.tld";
-                    smtpp.SmtpPort = 2525;
+                    smtpp.SenderEmail = _config.GetValue<string>("SmtpSettings:Senderemail");
+                    smtpp.SenderName = _config.GetValue<string>("SmtpSettings:Sendername");
+                    smtpp.SmtpDomain = _config.GetValue<string>("SmtpSettings:Smtpdomain");
+                    smtpp.SmtpPort = _config.GetValue<int>("SmtpSettings:Smtpport");
                     smtpp.UserEmail = user.Email;
                     if (smtpp.IsValidPatch())//Если путь к корневой директории соответствует установленному хостинг-провайдером,
                     {
@@ -123,7 +141,7 @@ namespace iBlog.Areas.Identity.Pages.Account
                     {
                         //В противном слуае отправляем письмо о проблеме администратору.
                         string WarningSubject = "Внимание!";
-                        string AdminEmail = "admin@domain.tld";
+                        string AdminEmail = _config.GetValue<string>("SmtpSettings:Adminemail");
                         string WarningMessage = "Письма для подтверждения e-mail не доставляются. Проверьте настройки.";
 
                         await smtpp.AsyncSendMailWithEncodeUrlPassworFree(smtpp.SenderName, smtpp.SenderEmail, AdminEmail, WarningSubject, WarningMessage, smtpp.IsBodyHtml, smtpp.SmtpDomain, smtpp.SmtpPort, smtpp.IsSSL);
@@ -137,9 +155,9 @@ namespace iBlog.Areas.Identity.Pages.Account
                         //Этот прользователь создается при регистрации с учетными данными (email), указанными в аргументах метода. До его создания (и после) 
                         //в приложении может регистрироваться сколько угодно пользователей.
                         //В дальнейшем планируется разработать использование этого метода с извлечением роли и e-mail администратора из хранилища.
-                        await CreateRolesAndAssignToUser(user, _context, _roleManager,_userManager, "Admin", "admin@domain.tld");
+                        await CreateRolesAndAssignToUser(user, _context, _roleManager, _userManager, _config.GetValue<string>("SmtpSettings:Adminname"), _config.GetValue<string>("SmtpSettings:Adminemail"));
                         #endregion Присвоение первому пользователю admin@domain.tld роли "Admin"
-                                               
+
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email });
                     }
                     else
