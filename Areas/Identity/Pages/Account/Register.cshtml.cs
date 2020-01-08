@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 
 using iBlog.Data;
 using Microsoft.Extensions.Configuration;
+using System.Text.Encodings.Web;
 
 namespace iBlog.Areas.Identity.Pages.Account
 {
