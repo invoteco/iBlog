@@ -11,15 +11,14 @@ namespace iBlog.Areas.Identity.Pages.Administration
     public class UsersInRolesModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-
-        public UsersInRolesModel(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly RoleManager<AppRole> _roleManager;
+        public UsersInRolesModel(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
         }
         [BindProperty]
-        public List<IdentityRole> AllRolesList { get; set; }
+        public List<AppRole> AllRolesList { get; set; }
         public List<AppUser> AllUsersList { get; set; }
 
         public void OnGet()

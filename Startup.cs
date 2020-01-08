@@ -17,7 +17,6 @@ namespace iBlog
 {
     public class Startup
     {
-        //public Startup(IConfiguration configuration)
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -32,8 +31,8 @@ namespace iBlog
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddRoles<IdentityRole>()
+            services.AddIdentity<AppUser, AppRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                    .AddRoles<AppRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultUI()
                     .AddDefaultTokenProviders();

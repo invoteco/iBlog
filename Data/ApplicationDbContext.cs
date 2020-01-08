@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iBlog.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole, string>
+    public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

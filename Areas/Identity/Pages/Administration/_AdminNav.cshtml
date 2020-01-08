@@ -1,6 +1,6 @@
 ﻿@using iBlog.Areas.Identity.Pages.Administration
 @inject SignInManager<iBlog.AppUser> SignInManager
-@inject RoleManager<IdentityRole> RoleManager
+@inject RoleManager<iBlog.AppRole> RoleManager
 
 <ul class="nav nav-pills flex-column">
     <li class="nav-item"><a class="nav-link @AdminNavPages.IndexNavClass(ViewContext)" id="adminp" asp-page="./Index">Administration</a></li>

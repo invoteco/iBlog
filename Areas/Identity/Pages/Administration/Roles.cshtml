@@ -18,12 +18,20 @@
             @foreach (var role in Model.Roles)
             {
                 <tr>
-                    <td>@role</td>
-                    <td>Description of Role</td>
+                    <td>@role.Name</td>
+                    <td>@role.RoleDescription</td>
                     <td>
-                       <form method="post" asp-page-handler="Delete" asp-route-rolename="@role">
-                            <button type="submit" class="btn btn-warning">Delete</button>
-                       </form>
+                        <form method="post" asp-page-handler="Delete" asp-route-rolename="@role">
+                            @if (role.Name == "Admin")
+                            {
+
+
+                            <button type="submit" disabled="disabled" class="btn btn-warning">Delete</button>
+                            }
+                            else { 
+                            <button type="submit" class="btn btn-warning">Delete</button>                         
+                            }
+                        </form>
                     </td>
                 </tr>
             }
@@ -37,6 +45,10 @@
         <div class="form-group">
             <label>New Role Name </label>
             <input type="text" name="rolename" class="form-control" />
+        </div>
+        <div>
+            <label>New Role Description</label>
+            <input type="text" name="roledescription" class="form-control" />
         </div>
         <button type="submit" class="btn btn-primary">Create</button>
     </form>

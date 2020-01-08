@@ -16,10 +16,10 @@ namespace iBlog.Areas.Identity.Pages.Administration
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<AppRole> _roleManager;
         private readonly ApplicationDbContext _context;//Для реализации метода CreateRoles
 
-        public RolesModel(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext conText)
+        public RolesModel(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, ApplicationDbContext conText)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -27,7 +27,7 @@ namespace iBlog.Areas.Identity.Pages.Administration
             _context = conText;
         }
 
-        public List<string> Roles { get; set; }
+        public List<AppRole> Roles { get; set; }
 
         /// <summary>
         /// Получает все роли приложения
@@ -43,17 +43,18 @@ namespace iBlog.Areas.Identity.Pages.Administration
 
         public void OnGet()
         {
-            Roles = GetAllAppRoles(_context);
+            Roles = _roleManager.Roles.ToList();
         }
 
-        public async Task<IActionResult> OnPostCreateAsync(string rolename)
+        public async Task<IActionResult> OnPostCreateAsync(string rolename, string roledescription)
         {
 
             bool x = await _roleManager.RoleExistsAsync(rolename);
             if (!x)
             {
-                var role = new IdentityRole();
+                var role = new AppRole();
                 role.Name = rolename;
+                role.RoleDescription = roledescription;
                 await _roleManager.CreateAsync(role);
             }
             return RedirectToPage("./Roles");
@@ -61,7 +62,7 @@ namespace iBlog.Areas.Identity.Pages.Administration
 
         public async Task<IActionResult> OnPostDeleteAsync(string rolename)
         {
-            IdentityRole role = await _roleManager.FindByNameAsync(rolename);
+            AppRole role = await _roleManager.FindByNameAsync(rolename);
             await _roleManager.DeleteAsync(role);
             return RedirectToPage("./Roles");
         }

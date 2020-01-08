@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-
 using iBlog.Data;
 using Microsoft.Extensions.Configuration;
 using System.Text.Encodings.Web;
@@ -27,15 +26,16 @@ namespace iBlog.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly ApplicationDbContext _context;//Для реализации метода CreateRoles
-        private readonly RoleManager<IdentityRole> _roleManager;//Для реализации метода CreateRoles
+        private readonly RoleManager<AppRole> _roleManager;//Для реализации метода CreateRoles
         private readonly IConfiguration _config;
+        private readonly string AdminRoleDescription="Может удалять пользователей";
 
         public RegisterModel(
                UserManager<AppUser> userManager,
                SignInManager<AppUser> signInManager,
                ILogger<RegisterModel> logger,
                IEmailSender emailSender,
-               RoleManager<IdentityRole> roleManager,//,
+               RoleManager<AppRole> roleManager,
                ApplicationDbContext conText, IConfiguration config)
         {
             _userManager = userManager;
@@ -137,7 +137,14 @@ namespace iBlog.Areas.Identity.Pages.Account
                         //Метод CreateRolesAndAssignToUser в данном случае вызывается для того, чтобы создать перврго пользователя с ролью Admin.
                         //Этот пользователь создается при регистрации с учетными данными (email), указанными в аргументах метода. До его создания (и после) 
                         //в приложении может регистрироваться сколько угодно пользователей.
-                        await CreateRolesAndAssignToUser(user, _context, _roleManager, _userManager, _config.GetValue<string>("SmtpSettings:Adminname"), _config.GetValue<string>("SmtpSettings:Adminemail"));
+                        await CreateRolesAndAssignToUser(
+                            user, 
+                            _context, 
+                            _roleManager,
+                            _userManager, 
+                            _config.GetValue<string>("SmtpSettings:Adminname"), 
+                            _config.GetValue<string>("SmtpSettings:Adminemail"), 
+                            AdminRoleDescription);
                         #endregion Присвоение первому пользователю admin@domain.tld роли "Admin"
 
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email });
@@ -167,20 +174,31 @@ namespace iBlog.Areas.Identity.Pages.Account
         /// <param name="rolename">Имя роли, которая будет присвоена пользователю appuser</param>
         /// <param name="email">E-mail, использованный пользователем appuser при регистрации</param>
         /// <returns></returns>
-        public async Task CreateRolesAndAssignToUser(AppUser appuser, ApplicationDbContext dbcontext, RoleManager<IdentityRole> rolemanager, UserManager<AppUser> usermanager, string rolename, string email)
+            public async Task CreateRolesAndAssignToUser(
+                AppUser appuser, 
+                ApplicationDbContext dbcontext, 
+                RoleManager<AppRole> rolemanager, 
+                UserManager<AppUser> usermanager, 
+                string rolename, 
+                string email, 
+                string adminroledescription)
+
         {
             bool x = await rolemanager.RoleExistsAsync(rolename);
             if (!x)
             {
-                var role = new IdentityRole();
+                var role = new AppRole();
                 role.Name = rolename;
+                role.RoleDescription = adminroledescription;
                 await rolemanager.CreateAsync(role);
             }
             var userId = appuser.Id;
+
             var allRoles = (from userRole in dbcontext.UserRoles.Where(ur => ur.UserId == userId).ToList()
                             join r in dbcontext.Roles
                             on userRole.RoleId equals r.Id
-                            select r.Name).ToList();          
+                            select r.Name).ToList();
+
             if (!allRoles.Contains(rolename))
             {
                 var user = await usermanager.FindByIdAsync(userId);
