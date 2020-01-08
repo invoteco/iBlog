@@ -152,7 +152,6 @@ namespace iBlog.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-            // If we got this far, something failed, redisplay form
             return Page();
         }
 
@@ -170,29 +169,25 @@ namespace iBlog.Areas.Identity.Pages.Account
         public async Task CreateRolesAndAssignToUser(AppUser appuser, ApplicationDbContext dbcontext, RoleManager<IdentityRole> rolemanager, UserManager<AppUser> usermanager, string rolename, string email)
         {
             bool x = await rolemanager.RoleExistsAsync(rolename);
-            if (!x)//Create new role if not existing
+            if (!x)
             {
                 var role = new IdentityRole();
                 role.Name = rolename;
                 await rolemanager.CreateAsync(role);
             }
             var userId = appuser.Id;
-            //Get all roles of the user by userId
             var allRoles = (from userRole in dbcontext.UserRoles.Where(ur => ur.UserId == userId).ToList()
                             join r in dbcontext.Roles
                             on userRole.RoleId equals r.Id
-                            select r.Name).ToList();
-            //assign role only if he does not have this roleName before            
+                            select r.Name).ToList();          
             if (!allRoles.Contains(rolename))
             {
                 var user = await usermanager.FindByIdAsync(userId);
-                //var y=await _userManager.
                 string em = user.Email;
                 if (em == email)
                 {
                     await usermanager.AddToRoleAsync(user, rolename);
                 }
-                //For removing a role, use await _userManager.RemoveFromRoleAsync(user, "Admin");
             }
         }
     }
