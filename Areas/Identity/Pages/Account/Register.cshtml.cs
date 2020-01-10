@@ -28,7 +28,7 @@ namespace iBlog.Areas.Identity.Pages.Account
         private readonly ApplicationDbContext _context;//Для реализации метода CreateRoles
         private readonly RoleManager<AppRole> _roleManager;//Для реализации метода CreateRoles
         private readonly IConfiguration _config;
-        private readonly string AdminRoleDescription="Может удалять пользователей";
+        private readonly string AdminRoleDescription = "Может удалять пользователей";
 
         public RegisterModel(
                UserManager<AppUser> userManager,
