@@ -47,10 +47,8 @@ namespace iBlog.Areas.Identity.Pages.Account
             DisplayConfirmAccountLink = false;
             if (DisplayConfirmAccountLink)
             {
-                //var userId = await _userManager.GetUserIdAsync(user);
-                var userId = await _userManager.GetUserIdAsync(user).ConfigureAwait(false);
-                //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
+                var userId = await _userManager.GetUserIdAsync(user);
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 EmailConfirmationUrl = Url.Page(
                     "/Account/ConfirmEmail",
