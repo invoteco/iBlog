@@ -34,8 +34,8 @@ namespace iBlog.Areas.Identity.Pages.Account
                 return RedirectToPage("/Index");
             }
 
-            //var user = await _userManager.FindByEmailAsync(email);
-            var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
+            var user = await _userManager.FindByEmailAsync(email);
+            
             if (user == null)
             {
                 return NotFound($"Unable to load user with email '{email}'.");
