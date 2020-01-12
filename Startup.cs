@@ -13,11 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.Services.AppAuthentication;
 
-using Microsoft.Azure.KeyVault;
-using Microsoft.Extensions.Configuration.AzureKeyVault;
+using Microsoft.AspNetCore.Authentication;
 
 namespace iBlog
 {
@@ -46,29 +43,27 @@ namespace iBlog
             services.AddMvc();
             services.AddRazorPages();
 
-            services.AddHttpContextAccessor();//
-            //services.AddAuthentication()
-            //services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+            services.AddHttpContextAccessor();
 
             services.AddAuthentication()
-                    //.AddFacebook(facebookOptions =>
-                    //{
-                    //    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
-                    //    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-                    //})
-                    //.AddGoogle(options =>
-                    //{
-                    //    IConfigurationSection googleAuthNSection =
-                    //    Configuration.GetSection("Authentication:Google");
-                    //    options.ClientId = googleAuthNSection["ClientId"];
-                    //    options.ClientSecret = googleAuthNSection["ClientSecret"];
-                    //})
-                   
+                    .AddFacebook(facebookOptions =>
+                    {
+                        facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                        facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                    })
+                    .AddGoogle(options =>
+                    {
+                        IConfigurationSection googleAuthNSection =
+                        Configuration.GetSection("Authentication:Google");
+                        options.ClientId = googleAuthNSection["ClientId"];
+                        options.ClientSecret = googleAuthNSection["ClientSecret"];
+                    })
+
                     .AddMicrosoftAccount(microsoftOptions =>
                     {
-                        //microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
-                        microsoftOptions.ClientId = new KeyIdentifier(AzureKeyVaultConfigurationExtensions.;
+                        microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
                         microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+
                     });
         }
 
@@ -99,12 +94,6 @@ namespace iBlog
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
-            });
-
-            app.Run(async context =>
-            {
-                context.Response.ContentType = "text/plain";
-                await context.Response.WriteAsync($@"SecretName (Name in Key Vault: 'SecretName'){Environment.NewLine}Obtained from Configuration with Configuration[""SecretName""]{Environment.NewLine}Value: {Configuration["SecretName"]}{Environment.NewLine}{Environment.NewLine}Section:SecretName (Name in Key Vault: 'Section--SecretName'){Environment.NewLine}Obtained from Configuration with Configuration[""Section:SecretName""]{Environment.NewLine}Value: {Configuration["Section:SecretName"]}{Environment.NewLine}{Environment.NewLine}Section:SecretName (Name in Key Vault: 'Section--SecretName'){Environment.NewLine}Obtained from Configuration with Configuration.GetSection(""Section"")[""SecretName""]{Environment.NewLine}Value: {Configuration.GetSection("Section")["SecretName"]}");
             });
         }
 
