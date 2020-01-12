@@ -48,20 +48,27 @@ namespace iBlog
             services.AddAuthentication()
                     .AddFacebook(facebookOptions =>
                     {
-                        facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
-                        facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                        //facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                        //facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                        facebookOptions.AppId = "2499576780164175";
+                        facebookOptions.AppSecret = "f64232bbd8dc5faf62ce12a181fa679e";
                     })
                     .AddGoogle(options =>
                     {
-                        IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");                     
-                        options.ClientId = googleAuthNSection["ClientId"];
-                        options.ClientSecret = googleAuthNSection["ClientSecret"];
+                        //IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");                     
+                        //options.ClientId = googleAuthNSection["ClientId"];
+                        //options.ClientSecret = googleAuthNSection["ClientSecret"];
+                        //IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");
+                        options.ClientId = "333521974004-8v5cguju3kc176f183s7hm2vh43tofcf.apps.googleusercontent.com";
+                        options.ClientSecret = "3DP1ArLZVYEvg1X8-3PL-oBJ";
                     })
 
                     .AddMicrosoftAccount(microsoftOptions =>
                     {
-                        microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
-                        microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+                        //microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+                        //microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+                        microsoftOptions.ClientId = "7336db4d-7bda-48a3-9236-d88736098828";
+                        microsoftOptions.ClientSecret = "YKd]byAXDn0bJGbpZ10XVVv?@xTYtk?9";
 
                     });
         }
