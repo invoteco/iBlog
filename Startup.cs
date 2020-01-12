@@ -53,8 +53,7 @@ namespace iBlog
                     })
                     .AddGoogle(options =>
                     {
-                        IConfigurationSection googleAuthNSection =
-                        Configuration.GetSection("Authentication:Google");
+                        IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");                     
                         options.ClientId = googleAuthNSection["ClientId"];
                         options.ClientSecret = googleAuthNSection["ClientSecret"];
                     })
