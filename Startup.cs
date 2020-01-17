@@ -105,7 +105,7 @@ namespace iBlog
             }
 
             //При использовании UseHttpsRedirection() получаем ошибку о множественном редиректе
-            //app.UseHttpsRedirection();//
+            app.UseHttpsRedirection();//
             //==================================================================+
             //app.Use((context, next) =>
             //{

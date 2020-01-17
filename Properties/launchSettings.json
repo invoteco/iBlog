@@ -2,12 +2,13 @@
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
-    "iis": {
-      "applicationUrl": "https://localhost:/5000",
-      "sslPort": 0
-    },
+    //"iis": {
+    //  "applicationUrl": "https://localhost:/5000",
+    //  "sslPort": 0
+    //},
     "iisExpress": {
-      "applicationUrl": "https://localhost:61564",
+      //"applicationUrl": "https://localhost:61564",
+      "applicationUrl": "https://localhost:44373",
       "sslPort": 44373
     }
   },
@@ -15,7 +16,6 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "https://localhost:44373",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -26,16 +26,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:44373"
-    },
-    "web": {
-      "commandName": "IIS",
-      "launchBrowser": true,
-      "launchUrl": "localhost:44373",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "ancmHostingModel": "InProcess"
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }
