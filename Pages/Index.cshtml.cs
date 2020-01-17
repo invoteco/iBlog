@@ -16,10 +16,28 @@ namespace iBlog.Pages
         {
             _logger = logger;
         }
-
-        public void OnGet()
-        {
-
+        public void OnGet() {
+            //Request.Protocol = "https";
+            //Response.Redirect("https://invoteco.com",true);
+            
+        
         }
+        //public void OnGet()
+        //{
+        //    //var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl }, protocol: "https");//Чтобы возврат на страницу был по https
+        //    var redirectUrl = Url.PageLink("/", protocol: "https");//Чтобы возврат на страницу был по https
+        //    RedirectToPage(redirectUrl);
+
+        //}
+        //public IActionResult OnGet()
+        //{
+
+        //    //var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl }, protocol: "https");//Чтобы возврат на страницу был по https
+        //    string redirecturl = Url.PageLink("", protocol: "https");//Чтобы возврат на страницу был по https
+        //    //RedirectToPage(redirectUrl);
+        //    //await redirectUrl.
+        //    return RedirectToPage(redirecturl);
+
+        //}
     }
 }

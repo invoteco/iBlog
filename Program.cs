@@ -23,27 +23,6 @@ namespace iBlog
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-        //public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)                                   
-        //  .ConfigureAppConfiguration((context, config) =>
-        //  {
-        //      if (context.HostingEnvironment.IsProduction())
-        //      {
-        //          var builtConfig = config.Build();
-
-        //          var azureServiceTokenProvider = new AzureServiceTokenProvider();
-        //          var keyVaultClient = new KeyVaultClient(
-        //              new KeyVaultClient.AuthenticationCallback(
-        //                  azureServiceTokenProvider.KeyVaultTokenCallback));
-
-        //          config.AddAzureKeyVault(
-        //              $"https://{builtConfig["KeyVaultName"]}.vault.azure.net/",
-        //              keyVaultClient,
-        //              new DefaultKeyVaultSecretManager());
-        //      }
-        //  })
-        //  .ConfigureWebHostDefaults(webBuilder =>
-        //  {
-        //      webBuilder.UseStartup<Startup>();
-        //  });
+   
     }
 }

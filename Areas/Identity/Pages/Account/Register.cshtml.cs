@@ -91,11 +91,12 @@ namespace iBlog.Areas.Identity.Pages.Account
                     _logger.LogInformation("User created a new account with password.");
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
                     var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code = code },
-                        protocol: Request.Scheme);
+                     "/Account/ConfirmEmail",
+                     pageHandler: null,
+                     values: new { area = "Identity", userId = user.Id, code = code },
+                     protocol: "https");
 #if DEBUG
                     #region Симуляция smtp-провайдера
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
