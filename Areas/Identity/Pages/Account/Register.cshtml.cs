@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using iBlog.Data;
 using Microsoft.Extensions.Configuration;
-using System.Text.Encodings.Web;
 
 namespace iBlog.Areas.Identity.Pages.Account
 {
@@ -81,6 +80,7 @@ namespace iBlog.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
+
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
