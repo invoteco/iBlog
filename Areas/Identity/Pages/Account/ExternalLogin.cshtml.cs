@@ -118,6 +118,7 @@ namespace iBlog.Areas.Identity.Pages.Account
         {
             returnUrl = returnUrl ?? Url.Content("~/");
             // Get the information about the user from the external login provider
+            //Получить информацию о пользователе от внешнего провайдера входа
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
@@ -126,9 +127,26 @@ namespace iBlog.Areas.Identity.Pages.Account
             }
 
             if (ModelState.IsValid)
-            {
+            {              
+                //===============================================================================================================================
+                //Bag: Если пользователь вошел при помощи GooleOauth, а затем вышел, а затем снова решил войти, то вместо входа его перебрасывает на 
+                //https://domain.tld/Identity/Account/ExternalLogin?returnUrl=%2F&handler=Confirmation
+                //при этом в поле "Email" уже содержится его Email, и имеется только кнопка Register, по клику на которой выдается сообщение
+                //User name 'user@userdomain.tld' is already taken. Входа при этом не происходит.
+
+                //Fix: Проверяем БД на наличие User-а с таким Email
+                var tuser = await _userManager.FindByEmailAsync(Input.Email);
+                
+                if (tuser != null) {
+                    await _userManager.DeleteAsync(tuser);//и удаляем его, если он существует, и только после этого заново создаем
+
+                }
+                //===============================================================================================================================
+
                 var user = new AppUser { UserName = Input.Email, Email = Input.Email };
+
                 var result = await _userManager.CreateAsync(user);
+
                 if (result.Succeeded)
                 {
                     result = await _userManager.AddLoginAsync(user, info);

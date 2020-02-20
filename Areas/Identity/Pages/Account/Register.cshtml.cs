@@ -139,12 +139,12 @@ namespace iBlog.Areas.Identity.Pages.Account
                         //Этот пользователь создается при регистрации с учетными данными (email), указанными в аргументах метода. До его создания (и после) 
                         //в приложении может регистрироваться сколько угодно пользователей.
                         await CreateRolesAndAssignToUser(
-                            user, 
-                            _context, 
+                            user,
+                            _context,
                             _roleManager,
-                            _userManager, 
-                            _config.GetValue<string>("SmtpSettings:Adminname"), 
-                            _config.GetValue<string>("SmtpSettings:Adminemail"), 
+                            _userManager,
+                            _config.GetValue<string>("SmtpSettings:Adminname"),
+                            _config.GetValue<string>("SmtpSettings:Adminemail"),
                             AdminRoleDescription);
                         #endregion Присвоение первому пользователю admin@domain.tld роли "Admin"
 

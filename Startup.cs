@@ -55,7 +55,7 @@ namespace iBlog
                     .AddGoogle(options =>
                     {
                         options.ClientId = Configuration["Authentication:Google:ClientId"];
-                        options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                        options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];                      
                     })
                     .AddMicrosoftAccount(microsoftOptions =>
                     {
